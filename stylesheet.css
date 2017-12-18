@@ -1,0 +1,416 @@
+* {
+    box-sizing: border-box;
+    margin: 0;
+}
+
+body {
+    height: 100vh;
+    background-color: black;
+    background-size: cover;
+    background-repeat: no-repeat;
+}
+
+.audiobtn {
+    position: absolute;
+    z-index: 5;
+    right: 10px;
+    top: 10px;
+    height: 20px;
+    width: 20px;
+    background-image: url(audioOn.png);
+    background-size: cover;
+}
+
+.titleCard {
+    background-image: url(evangelion-card.png);
+    background-size: contain;
+    background-repeat: no-repeat;
+    background-color: black;
+    position: absolute;
+    z-index: -4;
+    width: 850px;
+    height: 550px;
+    left: calc(50% - 425px);
+    top: calc(50% - 275px);
+    box-shadow: 0 0 40px 40px black;
+}
+
+.btn {
+    margin-top: calc(50%);
+    margin-left: calc(50% - 100px);
+    height: 80px;
+    width: 200px;
+
+    background-image: url(Begin.png);
+    background-size: contain;
+}
+
+.shader {
+    position: absolute;
+    z-index: 4;
+    width: 150%;
+    height: 150%;
+    transform: translate(-33.33%, -33.33%);
+    background-color: black;
+}
+
+.tester {
+    position: absolute;
+    left: 8px;
+    top: 8px;
+    height: 800px;
+    width: 800px;
+    background-image: url(red.jpg);
+    border: 40px darkred solid;
+    border-style: double;
+    border-radius: 400px;
+}
+
+.tester:before {
+  content: " ";
+  position: absolute;
+  z-index: 1;
+  border-radius: 500px;
+  top: -28px;
+  left: -28px;
+  right: -28px;
+  bottom: -28px;
+  border: 14px solid black;
+}
+
+.tester2 {
+    position: absolute;
+    left: 8px;
+    top: 8px;
+    z-index: 2;
+    background-position: center;
+    height: 500px;
+    width: 500px;
+    background-image: url(yellow.jpg);
+    background-size: 100% 100%;
+    background-position: center;
+    border: 27px gold solid;
+    border-style: double;
+    border-radius: 400px;
+    top: 300px;
+    left:300px;
+}
+
+
+.mouseControl {
+    transition: left 0s;
+}
+
+.keyControl {
+    transition: left .5s;
+}
+
+.placement {
+    transition: top 3s ease-in;
+}
+
+.options {
+    position: absolute;
+    visibility: hidden;
+    left: calc(50% - 425px);
+    top: calc(50% - 275px);
+    display: grid;
+    width: 850px;
+    height: 550px;
+    grid-template-columns: 10fr 1fr 1fr 1fr;
+    grid-template-rows: 1fr 1fr 1fr 1fr 3fr;
+    background-color: black;
+    box-shadow: 0 0 40px 40px black;
+}
+
+.name {
+    height:100px;
+}
+
+.left {
+    height: 100px;
+    background-image: url(leftArrow.png);
+    background-position: center;
+    background-repeat: no-repeat;
+    background-size: 50%;
+}
+
+.right {
+    height: 100px;
+    background-image: url(rightArrow.png);
+    background-position: center;
+    background-repeat: no-repeat;
+    background-size: 50%;
+}
+
+.value {
+    height: 100px;
+    background-repeat: no-repeat;
+    background-size: 100%;
+    background-position: center;
+}
+
+.name {
+    background-position: left;
+}
+
+.option1.name {
+    background-image: url(NumberPlayers.png);
+    background-size: auto 80%;
+    background-repeat: no-repeat;
+}
+
+.option1.value {
+    background-image: url(ONE.png);
+}
+
+.option2.name {
+    background-image: url(WhoFirst.png);
+    background-size: auto 80%;
+    background-repeat: no-repeat;
+}
+
+.option2.value {
+    background-image: url(P1.png);
+}
+
+.option3.name {
+    background-image: url(NumberColumns.png);
+    background-size: auto 80%;
+    background-repeat: no-repeat;
+}
+
+.option3.value {
+    background-image: url(SEVEN.png);
+}
+
+.option4.name {
+    background-image: url(NumberCoins.png);
+    background-size: auto 80%;
+    background-repeat: no-repeat;
+}
+
+.option4.value {
+    background-image: url(FOUR.png);
+}
+
+.startDialog {
+    grid-row: 5;
+    grid-column: 1/5;
+    background-image: url(GoYouTwo.png);
+    background-size: 60%;
+    background-repeat: no-repeat;
+    background-position: center;
+}
+
+.startDialog:before {
+    content: " ";
+    position: absolute;
+    z-index: 5;
+    top: 400px;
+    left: 200px;
+    bottom: 10px;
+    right: 210px;
+    border: 3px white solid;
+    border-radius: 30px;
+}
+
+#bodydiv {
+    position: absolute;
+    top: calc(50% - 404px);
+    left: calc(50% - 404px);
+    width: 1000px;
+}
+
+#playzone {
+    position: relative;
+    display: grid;
+    height: 104px;
+    /* width: 808px; */
+    grid-auto-flow: row;
+    /* grid-template-columns: repeat(8, 1fr); */
+    border: 4px black solid;
+    box-shadow: 0px 0px 20px 10px black;
+}
+
+.slots {
+    border: 1px grey dotted;
+    overflow: hidden;
+}
+
+.playSlot {
+    border: 1px dotted;
+    border-color: red yellow red yellow;
+    /* repeating-linear-gradient(
+        90deg,
+        rgb(241, 239, 2),
+        rgb(241, 239, 2) 10px,
+        #ff0000 10px,
+        #ff0000 20px) */
+}
+
+#gameboard {
+    position: relative;
+    display: grid;
+    height: 604px;
+    /*width: 704px;
+    grid-template-columns: repeat(7, 1fr);*/
+    grid-template-rows: repeat(6, 1fr);
+    grid-auto-flow: column;
+    border: 2px black solid;
+    box-shadow: 0 10px 20px 10px black;
+}
+
+.squares {
+    z-index: 0;
+    border: 2px black solid;
+    overflow: hidden;}
+
+.gaps {
+    z-index: -1;
+    position: relative;
+    height: 84px;
+    width: 84px;
+    border-radius: 84px;
+    margin: auto;
+    top: 5px;
+    border: 1px black solid;
+    box-shadow: 0 0 2px 2px black inset,  0 0 0 30px black;
+
+}
+
+.gaps:after {
+    z-index: 0;
+    height: 84px;
+    width: 84px;
+    border-radius: 84px;
+}
+
+.red {
+    position: absolute;
+    z-index: -1;
+    height: 88px;
+    width: 88px;
+    border-radius: 90px;
+    background-image: url(redCoin.png);
+    background-size: cover;
+    bottom: 100%;
+    /* transition: bottom 1.2s ease-in; */
+    /*transition: border 1.4s ease-in;*/
+    margin: auto;
+    transform: rotate(0deg);
+}
+
+.yellow {
+    position: absolute;
+    z-index: -1;
+    height: 88px;
+    width: 88px;
+    border-radius: 90px;
+    bottom: 100%;
+    background-image: url(yellowCoin.png);
+    background-size: cover;
+    /* transition: bottom 1.2s ease-in; */
+    /*transition: border 1.4s ease-in;*/
+    margin: auto;
+    transform: rotate(0deg);
+}
+
+.yellow.victory {
+    border-color: #d7af00 8px solid;
+    background: repeating-linear-gradient(
+  45deg,
+  #d7af00,
+  #d7af00 10px,
+  #fff7d2 10px,
+  #fff7d2 20px)
+}
+
+.red.victory {
+    border-color: #rgb(115, 0, 0) 8px solid;
+    background: repeating-linear-gradient(
+  45deg,
+  rgb(115, 0, 0),
+  rgb(115, 0, 0) 10px,
+  #ff0000 10px,
+  #ff0000 20px)
+}
+
+.red.ready {
+    margin-left: 5px;
+    bottom: calc(100% - 92px);
+}
+
+.yellow.ready {
+    margin-left: 5px;
+    bottom: calc(100% - 92px);
+}
+
+.endgameDecision {
+    visibility: hidden;
+    display: flex;
+    flex-wrap: wrap;
+    background-color: black;
+    position: absolute;
+    z-index: -4;
+    width: 100%;
+    height: 600px;
+    top: calc(50% - 300px);
+}
+
+.winBanner {
+    height: 500px;
+    width: 100%;
+    background-color: black;
+    background-image: url(playerOneWins.png);
+    background-size: contain;
+    background-repeat: no-repeat;
+    background-position: center;
+    border-bottom: 2px white solid;
+}
+
+.deathRebirth {
+    height:100px;
+    width: 50%;
+    background-color: black;
+    background-image: url(DeathRebirth.png);
+    background-size: contain;
+    background-repeat: no-repeat;
+    background-position: center;
+    border-right: 1px white solid;
+}
+
+.accessInstrumentality {
+    height: 100px;
+    width: 50%;
+    background-color: black;
+    background-image: url(AccessInstrument.png);
+    background-size: contain;
+    background-repeat: no-repeat;
+    background-position: center;
+    border-left: 1px white solid;
+}
+
+
+
+.endgameFullscreenRed {
+    visibility: hidden;
+    position: absolute;
+    background-position: center;
+    background-size: cover;
+    z-index: -4;
+    width: 100%;
+    height: 120%;
+    transform: translateY(-97%);
+}
+
+.endgameFullscreenYellow {
+    visibility: hidden;
+    position: absolute;
+    background-position: center;
+    background-size: cover;
+    z-index: -4;
+    width: 100%;
+    height: 120%;
+    transform: translateY(-97%);
+}
