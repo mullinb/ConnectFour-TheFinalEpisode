@@ -434,6 +434,7 @@ $(document).ready(function(){
             happening = true;
             setTimeout(engageAI, 2000 * getRandomArbitrary(1, 3))
         }
+        console.log(dataArray);
     }
 
 
@@ -1046,7 +1047,7 @@ $(document).ready(function(){
             })
         })
         $(lastCoin).animate({
-            transform: "rotate(" + (30*getRandomArbitrary(-1, 1)) + "deg)"
+            transform: "rotate(" + (180*getRandomArbitrary(-1, 1)) + "deg)"
         }, {
             duration: 500,
             queue: false
@@ -1085,11 +1086,11 @@ $(document).ready(function(){
         var possibleMoves = [];
         var moveChoice;
         setTimeout(function() {
-                for (var i=0; i<6; i++) {
+                for (var i=0; i<5; i++) {
                     for (var j=0; j<option3val; j++) {
                         if ($(dataArray[i][j]).is(".red") || $(dataArray[i][j]).is(".yellow")) {
                             if($(dataArray[i+1][j]).is(".red") === false && $(dataArray[i+1][j]).is(".yellow") === false) {
-                                possibleMoves.push([i+1 , j]);
+                                    possibleMoves.push([i+1 , j]);
                             }
                         }
                         if (i === 0 && $(dataArray[i][j]).is(".red") === false && $(dataArray[i][j]).is(".yellow") === false) {
@@ -1104,13 +1105,21 @@ $(document).ready(function(){
     }
 
     function selectMove(possibleMoves) {
-        var arr = possibleMoves;
+        var arrPm = possibleMoves;
         var moveChoice;
         var moveScores=[];
+        var firstDepth;
+        var firstDepthScores=[];
+        var thirdDepth;
+        var fourthDepth;
         var emptyEval = 0;
 
-        for (var i=0; i<arr.length; i++) {
-            if (arr[i][0] == 0) {
+        arrPm.sort(function(a , b) {
+            return a[1] - b[1];
+        })
+
+        for (var i=0; i<arrPm.length; i++) {
+            if (arrPm[i][0] == 0) {
                 emptyEval += 1;
             }
         }
@@ -1122,18 +1131,47 @@ $(document).ready(function(){
                 evenOdd += getRandomInt(-2, 1);
             }
 
-            moveChoice = [0, (Math.floor(arr.length / 2) + evenOdd)]
+            moveChoice = [0, (Math.floor(arrPm.length / 2) + evenOdd)]
             return moveChoice;
         }
 
-        for (var i=0; i<arr.length; i++) {
-            moveScores.push(moveEvaluator(arr[i]));
+        for (var i=0; i<arrPm.length; i++) {
+            moveScores.push(moveEvaluator(arrPm[i]));
         }
+
+        function lookDeeper1st() {
+            for (var i=0; i<arrPm.length; i++) {
+                firstDepth = arrPm.map(function(arr) {
+                    return arr.slice();
+                });
+                firstDepthScores[i]=[];
+                for (var j=0; j<arrPm.length; j++) {
+                    if (arrPm[j][1] === moveScores[i].move[1]) {
+                        firstDepth[j][0] += 1;
+                    }
+                }
+                for (var k=0; k<firstDepth.length; k++) {
+                    firstDepthScores[i].push([enemyMoveEvaluator(firstDepth[k])]);
+                }
+            }
+            for (var m=0; m<Object.keys(firstDepthScores).length; m++) {
+                for (var n=0; n<Object.keys(firstDepthScores[m]).length; n++) {
+                    moveScores[m].secondVal += firstDepthScores[m][n][0].firstVal+10;
+                }
+                moveScores[m].secondVal /= arrPm.length-2;
+
+            }
+        }
+        lookDeeper1st()
+
+        for (var o=0; o<arrPm.length; o++) {
+            moveScores[o].totalVal += (moveScores[o].firstVal - moveScores[o].secondVal);
+        }
+
         moveScores.sort(function(a, b){
-            return b.firstVal-a.firstVal;
+            return b.totalVal-a.totalVal;
         })
 
-        // console.log(moveScores);
 
         moveChoice = moveScores[0].move;
         return moveChoice;
@@ -1144,11 +1182,16 @@ $(document).ready(function(){
         this.move = move;
         this.row = move[0];
         this.column = move[1];
+        this.totalVal = 0;
         this.firstVal = 0;
         this.secondVal = 0;
         this.thirdVal = 0;
-        this.totalVal = 0;
     }
+
+    // transformBoardState(move) {
+    // }
+
+
 
     function moveEvaluator(move, iteration) {
         var thisMove = new NewMove(move);
@@ -1176,7 +1219,7 @@ $(document).ready(function(){
                             thisMove.firstVal += 40;
                             try {
                                 if ($(dataArray[thisMove.row-3][thisMove.column]).is(".red")) {
-                                    thisMove.firstVal += 105;
+                                    thisMove.firstVal += 360;
                                 }
                             } catch(e){}
                         }
@@ -1206,7 +1249,37 @@ $(document).ready(function(){
                             thisMove.firstVal += 40;
                             try {
                                 if ($(dataArray[thisMove.row-3][thisMove.column-3]).is(".red")) {
-                                    thisMove.firstVal += 105;
+                                    thisMove.firstVal += 360;
+                                }
+                            } catch(e){}
+                        }
+                    } catch(e){}
+                }
+            } catch(e){}
+            try {
+                if ($(dataArray[thisMove.row+1][thisMove.column+1]).is(".yellow")) {          ////CHECKING QUALITY AGAINST COINS BOTTOM LEFT DIAGONAL DISPLACED ONCE
+                    thisMove.firstVal += 10;
+                    try {
+                        if ($(dataArray[thisMove.row-1][thisMove.column-1]).is(".yellow")) {
+                            thisMove.firstVal += 30;
+                            try {
+                                if ($(dataArray[thisMove.row-2][thisMove.column-2]).is(".yellow")) {
+                                    thisMove.firstVal += 1000;
+                                }
+                            } catch(e){}
+                        }
+                    } catch(e){}
+                }
+            } catch(e){}
+            try {
+                if ($(dataArray[thisMove.row+1][thisMove.column+1]).is(".red")) {
+                    thisMove.firstVal += 5;
+                    try {
+                        if ($(dataArray[thisMove.row-1][thisMove.column-1]).is(".red")) {
+                            thisMove.firstVal += 40;
+                            try {
+                                if ($(dataArray[thisMove.row-2][thisMove.column-2]).is(".red")) {
+                                    thisMove.firstVal += 360;
                                 }
                             } catch(e){}
                         }
@@ -1236,7 +1309,37 @@ $(document).ready(function(){
                             thisMove.firstVal += 40;
                             try {
                                 if ($(dataArray[thisMove.row][thisMove.column-3]).is(".red")) {
-                                    thisMove.firstVal += 105;
+                                    thisMove.firstVal += 360;
+                                }
+                            } catch(e){}
+                        }
+                    } catch(e){}
+                }
+            } catch(e){}
+            try {
+                if ($(dataArray[thisMove.row][thisMove.column+1]).is(".yellow")) {           ////CHECKING QUALITY AGAINST COINS TO THE LEFT DISPLACED ONCE
+                    thisMove.firstVal += 10;
+                    try {
+                        if ($(dataArray[thisMove.row][thisMove.column-1]).is(".yellow")) {
+                            thisMove.firstVal += 30;
+                            try {
+                                if ($(dataArray[thisMove.row][thisMove.column-2]).is(".yellow")) {
+                                    thisMove.firstVal += 1000;
+                                }
+                            } catch(e){}
+                        }
+                    } catch(e){}
+                }
+            } catch(e){}
+            try {
+                if ($(dataArray[thisMove.row][thisMove.column+1]).is(".red")) {
+                    thisMove.firstVal += 5;
+                    try {
+                        if ($(dataArray[thisMove.row][thisMove.column-1]).is(".red")) {
+                            thisMove.firstVal += 40;
+                            try {
+                                if ($(dataArray[thisMove.row][thisMove.column-2]).is(".red")) {
+                                    thisMove.firstVal += 360;
                                 }
                             } catch(e){}
                         }
@@ -1266,7 +1369,37 @@ $(document).ready(function(){
                             thisMove.firstVal += 40;
                             try {
                                 if ($(dataArray[thisMove.row+3][thisMove.column-3]).is(".red")) {
-                                    thisMove.firstVal += 105;
+                                    thisMove.firstVal += 360;
+                                }
+                            } catch(e){}
+                        }
+                    } catch(e){}
+                }
+            } catch(e){}
+            try {
+                if ($(dataArray[thisMove.row-1][thisMove.column+1]).is(".yellow")) { ////CHECKING QUALITY AGAINST COINS TOP LEFT DIAGONAL DISPLACED ONCE
+                    thisMove.firstVal += 10;
+                    try {
+                        if ($(dataArray[thisMove.row+1][thisMove.column-1]).is(".yellow")) {
+                            thisMove.firstVal += 30;
+                            try {
+                                if ($(dataArray[thisMove.row+2][thisMove.column-2]).is(".yellow")) {
+                                    thisMove.firstVal += 1000;
+                                }
+                            } catch(e){}
+                        }
+                    } catch(e){}
+                }
+            } catch(e){}
+            try {
+                if ($(dataArray[thisMove.row-1][thisMove.column+1]).is(".red")) {
+                    thisMove.firstVal += 5;
+                    try {
+                        if ($(dataArray[thisMove.row+1][thisMove.column-1]).is(".red")) {
+                            thisMove.firstVal += 40;
+                            try {
+                                if ($(dataArray[thisMove.row+2][thisMove.column-2]).is(".red")) {
+                                    thisMove.firstVal += 360;
                                 }
                             } catch(e){}
                         }
@@ -1296,7 +1429,37 @@ $(document).ready(function(){
                             thisMove.firstVal += 40;
                             try {
                                 if ($(dataArray[thisMove.row+3][thisMove.column+3]).is(".red")) {
-                                    thisMove.firstVal += 105;
+                                    thisMove.firstVal += 360;
+                                }
+                            } catch(e){}
+                        }
+                    } catch(e){}
+                }
+            } catch(e){}
+            try {
+                if ($(dataArray[thisMove.row-1][thisMove.column-1]).is(".yellow")) {    ////CHECKING QUALITY AGAINST COINS TOP RIGHT DIAGONAL DISPLACED ONCE
+                    thisMove.firstVal += 10;
+                    try {
+                        if ($(dataArray[thisMove.row+1][thisMove.column+1]).is(".yellow")) {
+                            thisMove.firstVal += 30;
+                            try {
+                                if ($(dataArray[thisMove.row+2][thisMove.column+2]).is(".yellow")) {
+                                    thisMove.firstVal += 1000;
+                                }
+                            } catch(e){}
+                        }
+                    } catch(e){}
+                }
+            } catch(e){}
+            try {
+                if ($(dataArray[thisMove.row-1][thisMove.column-1]).is(".red")) {
+                    thisMove.firstVal += 5;
+                    try {
+                        if ($(dataArray[thisMove.row+1][thisMove.column+1]).is(".red")) {
+                            thisMove.firstVal += 40;
+                            try {
+                                if ($(dataArray[thisMove.row+2][thisMove.column+2]).is(".red")) {
+                                    thisMove.firstVal += 360;
                                 }
                             } catch(e){}
                         }
@@ -1326,7 +1489,37 @@ $(document).ready(function(){
                             thisMove.firstVal += 40;
                             try {
                                 if ($(dataArray[thisMove.row][thisMove.column+3]).is(".red")) {
-                                    thisMove.firstVal += 105;
+                                    thisMove.firstVal += 360;
+                                }
+                            } catch(e){}
+                        }
+                    } catch(e){}
+                }
+            } catch(e){}
+            try {
+                if ($(dataArray[thisMove.row][thisMove.column-1]).is(".yellow")) {      ////CHECKING QUALITY AGAINST COINS TO THE RIGHT DISPLACED ONCE
+                    thisMove.firstVal += 10;
+                    try {
+                        if ($(dataArray[thisMove.row][thisMove.column+1]).is(".yellow")) {
+                            thisMove.firstVal += 30;
+                            try {
+                                if ($(dataArray[thisMove.row][thisMove.column+2]).is(".yellow")) {
+                                    thisMove.firstVal += 1000;
+                                }
+                            } catch(e){}
+                        }
+                    } catch(e){}
+                }
+            } catch(e){}
+            try {
+                if ($(dataArray[thisMove.row][thisMove.column-1]).is(".red")) {
+                    thisMove.firstVal += 5;
+                    try {
+                        if ($(dataArray[thisMove.row][thisMove.column+1]).is(".red")) {
+                            thisMove.firstVal += 40;
+                            try {
+                                if ($(dataArray[thisMove.row][thisMove.column+2]).is(".red")) {
+                                    thisMove.firstVal += 360;
                                 }
                             } catch(e){}
                         }
@@ -1356,7 +1549,434 @@ $(document).ready(function(){
                             thisMove.firstVal += 40;
                             try {
                                 if ($(dataArray[thisMove.row-3][thisMove.column+3]).is(".red")) {
-                                    thisMove.firstVal += 105;
+                                    thisMove.firstVal += 360;
+                                }
+                            } catch(e){}
+                        }
+                    } catch(e){}
+                }
+            } catch(e){}
+            try {
+                if ($(dataArray[thisMove.row+1][thisMove.column-1]).is(".yellow")) {       ////CHECKING QUALITY AGAINST COINS TO THE BOTTOM RIGHT DIAGONAL DISPLACED ONCE
+                    thisMove.firstVal += 10;
+                    try {
+                        if ($(dataArray[thisMove.row-1][thisMove.column+1]).is(".yellow")) {
+                            thisMove.firstVal += 30;
+                            try {
+                                if ($(dataArray[thisMove.row-2][thisMove.column+2]).is(".yellow")) {
+                                    thisMove.firstVal += 1000;
+                                }
+                            } catch(e){}
+                        }
+                    } catch(e){}
+                }
+            } catch(e){}
+            try {
+                if ($(dataArray[thisMove.row+1][thisMove.column-1]).is(".red")) {
+                    thisMove.firstVal += 5;
+                    try {
+                        if ($(dataArray[thisMove.row-1][thisMove.column+1]).is(".red")) {
+                            thisMove.firstVal += 40;
+                            try {
+                                if ($(dataArray[thisMove.row-2][thisMove.column+2]).is(".red")) {
+                                    thisMove.firstVal += 360;
+                                }
+                            } catch(e){}
+                        }
+                    } catch(e){}
+                }
+            } catch(e){}
+        }
+        return thisMove;
+    }
+
+    function enemyMoveEvaluator(move, iteration) {
+        var thisMove = new NewMove(move);
+        for (var i=0; i<option4val; i++) {
+            try {
+                if ($(dataArray[thisMove.row-1][thisMove.column]).is(".red")) {                 ////CHECKING QUALITY AGAINST COINS BELOW
+                    thisMove.firstVal += 10;
+                    try {
+                        if ($(dataArray[thisMove.row-2][thisMove.column]).is(".red")) {
+                            thisMove.firstVal += 30;
+                            try {
+                                if ($(dataArray[thisMove.row-3][thisMove.column]).is(".red")) {
+                                    thisMove.firstVal += 1000;
+                                }
+                            } catch(e){}
+                        }
+                    } catch(e){}
+                }
+            } catch(e){}
+            try {
+                if ($(dataArray[thisMove.row-1][thisMove.column]).is(".yellow")) {
+                    thisMove.firstVal += 5;
+                    try {
+                        if ($(dataArray[thisMove.row-2][thisMove.column]).is(".yellow")) {
+                            thisMove.firstVal += 40;
+                            try {
+                                if ($(dataArray[thisMove.row-3][thisMove.column]).is(".yellow")) {
+                                    thisMove.firstVal += 360;
+                                }
+                            } catch(e){}
+                        }
+                    } catch(e){}
+                }
+            } catch(e){}
+            try {
+                if ($(dataArray[thisMove.row-1][thisMove.column-1]).is(".red")) {          ////CHECKING QUALITY AGAINST COINS BOTTOM LEFT DIAGONAL
+                    thisMove.firstVal += 10;
+                    try {
+                        if ($(dataArray[thisMove.row-2][thisMove.column-2]).is(".red")) {
+                            thisMove.firstVal += 30;
+                            try {
+                                if ($(dataArray[thisMove.row-3][thisMove.column-3]).is(".red")) {
+                                    thisMove.firstVal += 1000;
+                                }
+                            } catch(e){}
+                        }
+                    } catch(e){}
+                }
+            } catch(e){}
+            try {
+                if ($(dataArray[thisMove.row-1][thisMove.column-1]).is(".yellow")) {
+                    thisMove.firstVal += 5;
+                    try {
+                        if ($(dataArray[thisMove.row-2][thisMove.column-2]).is(".yellow")) {
+                            thisMove.firstVal += 40;
+                            try {
+                                if ($(dataArray[thisMove.row-3][thisMove.column-3]).is(".yellow")) {
+                                    thisMove.firstVal += 360;
+                                }
+                            } catch(e){}
+                        }
+                    } catch(e){}
+                }
+            } catch(e){}
+            try {
+                if ($(dataArray[thisMove.row+1][thisMove.column+1]).is(".red")) {          ////CHECKING QUALITY AGAINST COINS BOTTOM LEFT DIAGONAL DISPLACED ONCE
+                    thisMove.firstVal += 10;
+                    try {
+                        if ($(dataArray[thisMove.row-1][thisMove.column-1]).is(".red")) {
+                            thisMove.firstVal += 30;
+                            try {
+                                if ($(dataArray[thisMove.row-2][thisMove.column-2]).is(".red")) {
+                                    thisMove.firstVal += 1000;
+                                }
+                            } catch(e){}
+                        }
+                    } catch(e){}
+                }
+            } catch(e){}
+            try {
+                if ($(dataArray[thisMove.row+1][thisMove.column+1]).is(".yellow")) {
+                    thisMove.firstVal += 5;
+                    try {
+                        if ($(dataArray[thisMove.row-1][thisMove.column-1]).is(".yellow")) {
+                            thisMove.firstVal += 40;
+                            try {
+                                if ($(dataArray[thisMove.row-2][thisMove.column-2]).is(".yellow")) {
+                                    thisMove.firstVal += 360;
+                                }
+                            } catch(e){}
+                        }
+                    } catch(e){}
+                }
+            } catch(e){}
+            try {
+                if ($(dataArray[thisMove.row][thisMove.column-1]).is(".red")) {           ////CHECKING QUALITY AGAINST COINS TO THE LEFT
+                    thisMove.firstVal += 10;
+                    try {
+                        if ($(dataArray[thisMove.row][thisMove.column-2]).is(".red")) {
+                            thisMove.firstVal += 30;
+                            try {
+                                if ($(dataArray[thisMove.row][thisMove.column-3]).is(".red")) {
+                                    thisMove.firstVal += 1000;
+                                }
+                            } catch(e){}
+                        }
+                    } catch(e){}
+                }
+            } catch(e){}
+            try {
+                if ($(dataArray[thisMove.row][thisMove.column-1]).is(".yellow")) {
+                    thisMove.firstVal += 5;
+                    try {
+                        if ($(dataArray[thisMove.row][thisMove.column-2]).is(".yellow")) {
+                            thisMove.firstVal += 40;
+                            try {
+                                if ($(dataArray[thisMove.row][thisMove.column-3]).is(".yellow")) {
+                                    thisMove.firstVal += 360;
+                                }
+                            } catch(e){}
+                        }
+                    } catch(e){}
+                }
+            } catch(e){}
+            try {
+                if ($(dataArray[thisMove.row][thisMove.column+1]).is(".red")) {           ////CHECKING QUALITY AGAINST COINS TO THE LEFT DISPLACED ONCE
+                    thisMove.firstVal += 10;
+                    try {
+                        if ($(dataArray[thisMove.row][thisMove.column-1]).is(".red")) {
+                            thisMove.firstVal += 30;
+                            try {
+                                if ($(dataArray[thisMove.row][thisMove.column-2]).is(".red")) {
+                                    thisMove.firstVal += 1000;
+                                }
+                            } catch(e){}
+                        }
+                    } catch(e){}
+                }
+            } catch(e){}
+            try {
+                if ($(dataArray[thisMove.row][thisMove.column+1]).is(".yellow")) {
+                    thisMove.firstVal += 5;
+                    try {
+                        if ($(dataArray[thisMove.row][thisMove.column-1]).is(".yellow")) {
+                            thisMove.firstVal += 40;
+                            try {
+                                if ($(dataArray[thisMove.row][thisMove.column-2]).is(".yellow")) {
+                                    thisMove.firstVal += 360;
+                                }
+                            } catch(e){}
+                        }
+                    } catch(e){}
+                }
+            } catch(e){}
+            try {
+                if ($(dataArray[thisMove.row+1][thisMove.column-1]).is(".red")) { ////CHECKING QUALITY AGAINST COINS TOP LEFT DIAGONAL
+                    thisMove.firstVal += 10;
+                    try {
+                        if ($(dataArray[thisMove.row+2][thisMove.column-2]).is(".red")) {
+                            thisMove.firstVal += 30;
+                            try {
+                                if ($(dataArray[thisMove.row+3][thisMove.column-3]).is(".red")) {
+                                    thisMove.firstVal += 1000;
+                                }
+                            } catch(e){}
+                        }
+                    } catch(e){}
+                }
+            } catch(e){}
+            try {
+                if ($(dataArray[thisMove.row+1][thisMove.column-1]).is(".yellow")) {
+                    thisMove.firstVal += 5;
+                    try {
+                        if ($(dataArray[thisMove.row+2][thisMove.column-2]).is(".yellow")) {
+                            thisMove.firstVal += 40;
+                            try {
+                                if ($(dataArray[thisMove.row+3][thisMove.column-3]).is(".yellow")) {
+                                    thisMove.firstVal += 360;
+                                }
+                            } catch(e){}
+                        }
+                    } catch(e){}
+                }
+            } catch(e){}
+            try {
+                if ($(dataArray[thisMove.row-1][thisMove.column+1]).is(".red")) { ////CHECKING QUALITY AGAINST COINS TOP LEFT DIAGONAL DISPLACED ONCE
+                    thisMove.firstVal += 10;
+                    try {
+                        if ($(dataArray[thisMove.row+1][thisMove.column-1]).is(".red")) {
+                            thisMove.firstVal += 30;
+                            try {
+                                if ($(dataArray[thisMove.row+2][thisMove.column-2]).is(".red")) {
+                                    thisMove.firstVal += 1000;
+                                }
+                            } catch(e){}
+                        }
+                    } catch(e){}
+                }
+            } catch(e){}
+            try {
+                if ($(dataArray[thisMove.row-1][thisMove.column+1]).is(".yellow")) {
+                    thisMove.firstVal += 5;
+                    try {
+                        if ($(dataArray[thisMove.row+1][thisMove.column-1]).is(".yellow")) {
+                            thisMove.firstVal += 40;
+                            try {
+                                if ($(dataArray[thisMove.row+2][thisMove.column-2]).is(".yellow")) {
+                                    thisMove.firstVal += 360;
+                                }
+                            } catch(e){}
+                        }
+                    } catch(e){}
+                }
+            } catch(e){}
+            try {
+                if ($(dataArray[thisMove.row+1][thisMove.column+1]).is(".red")) {    ////CHECKING QUALITY AGAINST COINS TOP RIGHT DIAGONAL
+                    thisMove.firstVal += 10;
+                    try {
+                        if ($(dataArray[thisMove.row+2][thisMove.column+2]).is(".red")) {
+                            thisMove.firstVal += 30;
+                            try {
+                                if ($(dataArray[thisMove.row+3][thisMove.column+3]).is(".red")) {
+                                    thisMove.firstVal += 1000;
+                                }
+                            } catch(e){}
+                        }
+                    } catch(e){}
+                }
+            } catch(e){}
+            try {
+                if ($(dataArray[thisMove.row+1][thisMove.column+1]).is(".yellow")) {
+                    thisMove.firstVal += 5;
+                    try {
+                        if ($(dataArray[thisMove.row+2][thisMove.column+2]).is(".yellow")) {
+                            thisMove.firstVal += 40;
+                            try {
+                                if ($(dataArray[thisMove.row+3][thisMove.column+3]).is(".yellow")) {
+                                    thisMove.firstVal += 360;
+                                }
+                            } catch(e){}
+                        }
+                    } catch(e){}
+                }
+            } catch(e){}
+            try {
+                if ($(dataArray[thisMove.row-1][thisMove.column-1]).is(".red")) {    ////CHECKING QUALITY AGAINST COINS TOP RIGHT DIAGONAL DISPLACED ONCE
+                    thisMove.firstVal += 10;
+                    try {
+                        if ($(dataArray[thisMove.row+1][thisMove.column+1]).is(".red")) {
+                            thisMove.firstVal += 30;
+                            try {
+                                if ($(dataArray[thisMove.row+2][thisMove.column+2]).is(".red")) {
+                                    thisMove.firstVal += 1000;
+                                }
+                            } catch(e){}
+                        }
+                    } catch(e){}
+                }
+            } catch(e){}
+            try {
+                if ($(dataArray[thisMove.row-1][thisMove.column-1]).is(".yellow")) {
+                    thisMove.firstVal += 5;
+                    try {
+                        if ($(dataArray[thisMove.row+1][thisMove.column+1]).is(".yellow")) {
+                            thisMove.firstVal += 40;
+                            try {
+                                if ($(dataArray[thisMove.row+2][thisMove.column+2]).is(".yellow")) {
+                                    thisMove.firstVal += 360;
+                                }
+                            } catch(e){}
+                        }
+                    } catch(e){}
+                }
+            } catch(e){}
+            try {
+                if ($(dataArray[thisMove.row][thisMove.column+1]).is(".red")) {      ////CHECKING QUALITY AGAINST COINS TO THE RIGHT
+                    thisMove.firstVal += 10;
+                    try {
+                        if ($(dataArray[thisMove.row][thisMove.column+2]).is(".red")) {
+                            thisMove.firstVal += 30;
+                            try {
+                                if ($(dataArray[thisMove.row][thisMove.column+3]).is(".red")) {
+                                    thisMove.firstVal += 1000;
+                                }
+                            } catch(e){}
+                        }
+                    } catch(e){}
+                }
+            } catch(e){}
+            try {
+                if ($(dataArray[thisMove.row][thisMove.column+1]).is(".yellow")) {
+                    thisMove.firstVal += 5;
+                    try {
+                        if ($(dataArray[thisMove.row][thisMove.column+2]).is(".yellow")) {
+                            thisMove.firstVal += 40;
+                            try {
+                                if ($(dataArray[thisMove.row][thisMove.column+3]).is(".yellow")) {
+                                    thisMove.firstVal += 360;
+                                }
+                            } catch(e){}
+                        }
+                    } catch(e){}
+                }
+            } catch(e){}
+            try {
+                if ($(dataArray[thisMove.row][thisMove.column-1]).is(".red")) {      ////CHECKING QUALITY AGAINST COINS TO THE RIGHT DISPLACED ONCE
+                    thisMove.firstVal += 10;
+                    try {
+                        if ($(dataArray[thisMove.row][thisMove.column+1]).is(".red")) {
+                            thisMove.firstVal += 30;
+                            try {
+                                if ($(dataArray[thisMove.row][thisMove.column+2]).is(".red")) {
+                                    thisMove.firstVal += 1000;
+                                }
+                            } catch(e){}
+                        }
+                    } catch(e){}
+                }
+            } catch(e){}
+            try {
+                if ($(dataArray[thisMove.row][thisMove.column-1]).is(".yellow")) {
+                    thisMove.firstVal += 5;
+                    try {
+                        if ($(dataArray[thisMove.row][thisMove.column+1]).is(".yellow")) {
+                            thisMove.firstVal += 40;
+                            try {
+                                if ($(dataArray[thisMove.row][thisMove.column+2]).is(".yellow")) {
+                                    thisMove.firstVal += 360;
+                                }
+                            } catch(e){}
+                        }
+                    } catch(e){}
+                }
+            } catch(e){}
+            try {
+                if ($(dataArray[thisMove.row-1][thisMove.column+1]).is(".red")) {       ////CHECKING QUALITY AGAINST COINS TO THE BOTTOM RIGHT DIAGONAL
+                    thisMove.firstVal += 10;
+                    try {
+                        if ($(dataArray[thisMove.row-2][thisMove.column+2]).is(".red")) {
+                            thisMove.firstVal += 30;
+                            try {
+                                if ($(dataArray[thisMove.row-3][thisMove.column+3]).is(".red")) {
+                                    thisMove.firstVal += 1000;
+                                }
+                            } catch(e){}
+                        }
+                    } catch(e){}
+                }
+            } catch(e){}
+            try {
+                if ($(dataArray[thisMove.row-1][thisMove.column+1]).is(".yellow")) {
+                    thisMove.firstVal += 5;
+                    try {
+                        if ($(dataArray[thisMove.row-2][thisMove.column+2]).is(".yellow")) {
+                            thisMove.firstVal += 40;
+                            try {
+                                if ($(dataArray[thisMove.row-3][thisMove.column+3]).is(".yellow")) {
+                                    thisMove.firstVal += 360;
+                                }
+                            } catch(e){}
+                        }
+                    } catch(e){}
+                }
+            } catch(e){}
+            try {
+                if ($(dataArray[thisMove.row+1][thisMove.column-1]).is(".red")) {       ////CHECKING QUALITY AGAINST COINS TO THE BOTTOM RIGHT DIAGONAL DISPLACED ONCE
+                    thisMove.firstVal += 10;
+                    try {
+                        if ($(dataArray[thisMove.row-1][thisMove.column+1]).is(".red")) {
+                            thisMove.firstVal += 30;
+                            try {
+                                if ($(dataArray[thisMove.row-2][thisMove.column+2]).is(".red")) {
+                                    thisMove.firstVal += 1000;
+                                }
+                            } catch(e){}
+                        }
+                    } catch(e){}
+                }
+            } catch(e){}
+            try {
+                if ($(dataArray[thisMove.row+1][thisMove.column-1]).is(".yellow")) {
+                    thisMove.firstVal += 5;
+                    try {
+                        if ($(dataArray[thisMove.row-1][thisMove.column+1]).is(".yellow")) {
+                            thisMove.firstVal += 40;
+                            try {
+                                if ($(dataArray[thisMove.row-2][thisMove.column+2]).is(".yellow")) {
+                                    thisMove.firstVal += 360;
                                 }
                             } catch(e){}
                         }
@@ -1374,7 +1994,7 @@ $(document).ready(function(){
         $("#gameboard").append("<div id='coin" + turn + "' data-column=" + i + " data-row=" + gProg['col'+i] + " class='yellow'></div>");
         $("#coin" + turn).css({
             left: $(slots[i]).offset().left + 5 - document.querySelector("#bodydiv").offsetLeft,
-            transform: "rotate(" + (30*getRandomArbitrary(-1, 1)) + "deg)"
+            transform: "rotate(" + (180*getRandomArbitrary(-1, 1)) + "deg)"
         })
         coin.currentTime=0;
         coin.play();
@@ -1408,7 +2028,7 @@ $(document).ready(function(){
 
     function setUpControlEvents(){
         $(document).on('mousedown.play', function (e){
-            if (happening === false && e.target.classList.contains("slots") && e.target != document.querySelector(".playSlot")) {
+            if (happening === false && e.target.classList.contains("slots") && e.target != document.querySelector(".playSlot") && dataArray[5][$(e.target).index()] === null) {
                 $(".slots").empty();
                 happening = true;
                 for (i=0; i<option3val; i++) {
@@ -1422,7 +2042,7 @@ $(document).ready(function(){
                        coin.play();
                        $("#coin" + turn).css({
                            left: $(slots[i]).offset().left + 5 - document.querySelector("#bodydiv").offsetLeft,
-                           transform: "rotate(" + (30*getRandomArbitrary(-1, 1)) + "deg)"
+                           transform: "rotate(" + (180*getRandomArbitrary(-1, 1)) + "deg)"
                        })
                        dynamics.animate(document.querySelector("#coin" + turn), {
                            bottom: 100 * gProg['col'+i]+7 + getRandomArbitrary(-3, 3)
@@ -1473,7 +2093,7 @@ $(document).ready(function(){
                    x++
                })
                var currentBox = $(".slots").get(x);
-               if (e.keyCode == 32) {
+               if (e.keyCode == 32  && dataArray[5][x] === null) {
                    e.preventDefault();
                    if (happening === false && currentBox != document.querySelector(".playSlot")) {
                        $(".slots").empty();
@@ -1487,7 +2107,7 @@ $(document).ready(function(){
                                }
                                $("#coin" + turn).css({
                                    left: $(slots[i]).offset().left + 5 - document.querySelector("#bodydiv").offsetLeft,
-                                   transform: "rotate(" + (30*getRandomArbitrary(-1, 1)) + "deg)"
+                                   transform: "rotate(" + (180*getRandomArbitrary(-1, 1)) + "deg)"
                                })
                                coin.currentTime = 0;
                                coin.play();
