@@ -5,7 +5,7 @@
 
 <h3> A fully-featured two-player browser game with optional computer opponent </h3>
 
-What began as a class assignment with a number of suggested optional bonus features grew into a flashy, thematically-focused game with a functioning and reasonably competitive AI.
+<h4>What began as a class assignment with a number of suggested optional bonus features grew into a flashy, thematically-focused game with a functioning and reasonably competitive AI.<h4>
 
 <img src="https://s3.amazonaws.com/fluxlymoppings/pics/Ras8FHcgLndh-X5liWIwhXppgzCNgn9e.png" width="500">
 
