@@ -7,11 +7,11 @@
 
 What began as a class assignment with a number of suggested optional bonus features grew into a flashy, thematically-focused game with a functioning and reasonably competitive AI.
 
-![ScreenShot](screenshot.jpg)
+<img src="https://s3.amazonaws.com/fluxlymoppings/pics/Ras8FHcgLndh-X5liWIwhXppgzCNgn9e.png" width="500">
 
 Taking inspiration from one of my favorite anime, <i>Neon Genesis Evangelion</i>, "Connect Four: The Final Episode" comes complete with music, sound effects, and a visual design which are mutually complimentary, and together pay tribute to the aforementioned landmark series. Using assets both borrowed and newly remixed, the visual presentation is driven by vanilla JavaScript code managing CSS transitions, and is the best example in my portfolio of my creative sense for visual design. Visual and audio fades create an epic yet moody atmosphere, completely in keeping with the tone of the original show; it is perhaps best taken ironically given the target age-range of the actual game, but the impression is a strong one nonetheless.
 
-![ScreenShot](screenshot.jpg)
+<img src="https://s3.amazonaws.com/fluxlymoppings/pics/u1gOZyxVCgT3pvYHBbUiTAJND22W7OIU.png" width="500">
 
 From a programmer's perspective, the centerpiece of the project is the AI engine of my own design. It is a simple move evaluator, written on entirely too many lines of code, but given the due date of the project, expediency was my most important consideration. However, it does work; try and beat it. If you are unfamiliar with Connect Four strategy or otherwise incautious, it may very well come up victorious, as it almost completely beyond silly errors. It contains no knowledge of the mathematical solution(s) to Connect Four, but it is a decent opponent. And that, at least, allows for a bit of solo-player fun!
 
