@@ -1,7 +1,7 @@
 # mullinb.github.io
 
 
-<h1><a href="https://mullinb.github.io/connect4/">Connect Four: The Final Episode </a></h1>
+<h1><a href="https://mullinb.github.io/ConnectFour-TheFinalEpisode/">Connect Four: The Final Episode </a></h1>
 
 <h3> A fully-featured two-player browser game with optional computer opponent </h3>
 
