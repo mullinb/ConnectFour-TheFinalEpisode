@@ -24,7 +24,7 @@ From a programmer's perspective, the centerpiece of the project is the AI engine
 
 Finally, the game loop is water-tight, and can be restarted seemlessly even after adjusting options such as player number, player order, or the gameboard dimensions. Basic animations using the very cool Dynamics.js library (credit to <a href="http://www.michaelvillar.com/">Michael Villar</a>) govern the coin bounce, and several free sounds from freesound.org were incorporated as sound effects. The music is borrowed from the original NGE soundtrack, while most of the two large banner images are borrowed from some excellent fanart. The coins and board were of my own design, borrowing images from the show.
 
-Please try it <a href="https://mullinb.github.io/connect4/">here</a>.
+Please try it <a href="https://mullinb.github.io/ConnectFour-TheFinalEpisode/">here</a>.
 
 
 
