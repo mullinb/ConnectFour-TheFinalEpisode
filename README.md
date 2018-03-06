@@ -26,7 +26,15 @@ Finally, the game loop is water-tight, and can be restarted seemlessly even afte
 
 Please try it <a href="https://mullinb.github.io/ConnectFour-TheFinalEpisode/">here</a>.
 
+## Technologies
+<ul>
+  <li> Static Webpage </li>
+  <li> HTML </li>
+  <li> CSS </li>
+  <li> JavaScript </li>
+  <li> JQuery </li>
+  <li> <a href="http://dynamicsjs.com/">Dynamics.js</a></li>
 
-
+</ul>
 
 
