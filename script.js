@@ -1,9 +1,9 @@
 $(document).ready(function() {
   var startAppButton = document.querySelector("#start-app-button");
-  startAppButton.onclick(function() {
+  startAppButton.onclick = function() {
     runApp();
     startAppButton.remove();
-  });
+  };
 });
 
 function runApp() {
