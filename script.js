@@ -1,6 +1,6 @@
 $(document).ready(function() {
   var startAppButton = document.querySelector("#start-app-button");
-  startAppButton.on("click", function() {
+  startAppButton.onclick(function() {
     runApp();
     startAppButton.remove();
   });
