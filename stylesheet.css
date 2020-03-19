@@ -420,4 +420,5 @@ body {
   color: black;
   background-color: white;
   z-index: 100;
+  position: absolute;
 }
